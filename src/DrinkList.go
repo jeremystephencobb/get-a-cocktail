@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"strings"
 )
 
 type DrinkList struct {
@@ -39,7 +40,7 @@ func BuildDrinkList(bodyBytes []byte) string {
 			fmt.Println(err)
 		}
 
-		return result
+		return strings.ReplaceAll(result, " ", "_")
 	}
 
 	return ""

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/manifoldco/promptui"
 )
@@ -84,6 +83,8 @@ Main:
 			searchByName(searchValueResult)
 		case searchValueResult == "ingredient name":
 			searchByIngredient(searchValueResult)
+		case searchValueResult == "glass type":
+			searchByGlass(searchValueResult)
 		default:
 			fmt.Println("search by ", searchValueResult)
 		}
@@ -120,10 +121,26 @@ func searchByIngredient(searchValueResult string) {
 	bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
 	drinkName := BuildDrinkList(bodyBytes)
 	if len(drinkName) >= 1 {
-		b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
+		b := HandleCocktailSearch("name", drinkName)
 		BuildDrinkInstructions(b)
 	} else {
 		fmt.Println("There are no cocktails with that ingredient")
+	}
+}
+
+func searchByGlass(searchValueResult string) {
+	valResult, valErr := HandleTextSearch(searchValueResult)
+
+	if valErr != nil {
+		fmt.Printf("Something went wrong, please try again")
+	}
+	bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
+	drinkName := BuildDrinkList(bodyBytes)
+	if len(drinkName) >= 1 {
+		b := HandleCocktailSearch("name", drinkName)
+		BuildDrinkInstructions(b)
+	} else {
+		fmt.Println("There are no cocktails served in that glass")
 	}
 }
 

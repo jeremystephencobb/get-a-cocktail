@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"strings"
 )
 
 func HandleTextSearch(searchValueResult string) (string, error) {
@@ -17,5 +18,5 @@ func HandleTextSearch(searchValueResult string) (string, error) {
 	if err != nil {
 		return "", errors.New("Something went wrong, please try again")
 	}
-	return result, nil
+	return strings.ReplaceAll(result, " ", "_"), nil
 }
