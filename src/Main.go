@@ -10,49 +10,42 @@ import (
 // Generated with: https://mholt.github.io/json-to-go/
 type Drinks struct {
 	Drinks []struct {
-		IDDrink                     string `json:"idDrink"`
-		Name                        string `json:"strDrink"`
-		AlternateName               string `json:"strDrinkAlternate"`
-		Tags                        string `json:"strTags"`
-		Video                       string `json:"strVideo"`
-		Category                    string `json:"strCategory"`
-		IBA                         string `json:"strIBA"`
-		Alcoholic                   string `json:"strAlcoholic"`
-		Glass                       string `json:"strGlass"`
-		Instructions                string `json:"strInstructions"`
-		DrinkThumb                  string `json:"strDrinkThumb"`
-		Ingredient1                 string `json:"strIngredient1"`
-		Measure1                    string `json:"strMeasure1"`
-		Ingredient2                 string `json:"strIngredient2"`
-		Measure2                    string `json:"strMeasure2"`
-		Ingredient3                 string `json:"strIngredient3"`
-		Measure3                    string `json:"strMeasure3"`
-		Ingredient4                 string `json:"strIngredient4"`
-		Measure4                    string `json:"strMeasure4"`
-		Ingredient5                 string `json:"strIngredient5"`
-		Measure5                    string `json:"strMeasure5"`
-		Ingredient6                 string `json:"strIngredient6"`
-		Measure6                    string `json:"strMeasure6"`
-		Ingredient7                 string `json:"strIngredient7"`
-		Measure7                    string `json:"strMeasure7"`
-		Ingredient8                 string `json:"strIngredient8"`
-		Measure8                    string `json:"strMeasure8"`
-		Ingredient9                 string `json:"strIngredient9"`
-		Measure9                    string `json:"strMeasure9"`
-		Ingredient10                string `json:"strIngredient10"`
-		Measure10                   string `json:"strMeasure10"`
-		Ingredient11                string `json:"strIngredient11"`
-		Measure11                   string `json:"strMeasure11"`
-		Ingredient12                string `json:"strIngredient12"`
-		Measure12                   string `json:"strMeasure12"`
-		Ingredient13                string `json:"strIngredient13"`
-		Measure13                   string `json:"strMeasure13"`
-		Ingredient14                string `json:"strIngredient14"`
-		Measure14                   string `json:"strMeasure14"`
-		Measure15                   string `json:"strMeasure15"`
-		Ingredient15                string `json:"strIngredient15"`
-		StrCreativeCommonsConfirmed string `json:"strCreativeCommonsConfirmed"`
-		DateModified                string `json:"dateModified"`
+		IDDrink      string `json:"idDrink"`
+		Name         string `json:"strDrink"`
+		Category     string `json:"strCategory"`
+		Alcoholic    string `json:"strAlcoholic"`
+		Glass        string `json:"strGlass"`
+		Instructions string `json:"strInstructions"`
+		Ingredient1  string `json:"strIngredient1"`
+		Measure1     string `json:"strMeasure1"`
+		Ingredient2  string `json:"strIngredient2"`
+		Measure2     string `json:"strMeasure2"`
+		Ingredient3  string `json:"strIngredient3"`
+		Measure3     string `json:"strMeasure3"`
+		Ingredient4  string `json:"strIngredient4"`
+		Measure4     string `json:"strMeasure4"`
+		Ingredient5  string `json:"strIngredient5"`
+		Measure5     string `json:"strMeasure5"`
+		Ingredient6  string `json:"strIngredient6"`
+		Measure6     string `json:"strMeasure6"`
+		Ingredient7  string `json:"strIngredient7"`
+		Measure7     string `json:"strMeasure7"`
+		Ingredient8  string `json:"strIngredient8"`
+		Measure8     string `json:"strMeasure8"`
+		Ingredient9  string `json:"strIngredient9"`
+		Measure9     string `json:"strMeasure9"`
+		Ingredient10 string `json:"strIngredient10"`
+		Measure10    string `json:"strMeasure10"`
+		Ingredient11 string `json:"strIngredient11"`
+		Measure11    string `json:"strMeasure11"`
+		Ingredient12 string `json:"strIngredient12"`
+		Measure12    string `json:"strMeasure12"`
+		Ingredient13 string `json:"strIngredient13"`
+		Measure13    string `json:"strMeasure13"`
+		Ingredient14 string `json:"strIngredient14"`
+		Measure14    string `json:"strMeasure14"`
+		Measure15    string `json:"strMeasure15"`
+		Ingredient15 string `json:"strIngredient15"`
 	} `json:"drinks"`
 }
 
@@ -86,7 +79,7 @@ Main:
 		case searchValueResult == "quit":
 			break Main
 		case searchValueResult == "random":
-			HandleCocktailSearch(searchValueResult, "")
+			searchByRandom()
 		case searchValueResult == "name":
 			searchByName(searchValueResult)
 		case searchValueResult == "ingredient name":
@@ -95,6 +88,11 @@ Main:
 			fmt.Println("search by ", searchValueResult)
 		}
 	}
+}
+
+func searchByRandom() {
+	bodyBytes := HandleCocktailSearch("random", "")
+	BuildDrinkInstructions(bodyBytes)
 }
 
 func searchByName(searchValueResult string) {
@@ -107,6 +105,12 @@ func searchByName(searchValueResult string) {
 	BuildDrinkInstructions(bodyBytes)
 }
 
+// user selects ingredient
+// user is directed to HandleTextSearch, which returns their query
+// 'ingredient' and 'query' are passed to HandleCocktailSearch which returns bodyBytes
+// bodyBytes is passed to BuildDrinkList, which creates a prompt to select a drink from and returns  a drink
+// HandlecocktailSearch searches for the selected drink by name
+// BuildDrinkInstructions builds and displays the drink instructions
 func searchByIngredient(searchValueResult string) {
 	valResult, valErr := HandleTextSearch(searchValueResult)
 
@@ -115,9 +119,12 @@ func searchByIngredient(searchValueResult string) {
 	}
 	bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
 	drinkName := BuildDrinkList(bodyBytes)
-
-	b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
-	BuildDrinkInstructions(b)
+	if len(drinkName) >= 1 {
+		b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
+		BuildDrinkInstructions(b)
+	} else {
+		fmt.Println("There are no cocktails with that ingredient")
+	}
 }
 
 func handleSearchType(selection string) string {

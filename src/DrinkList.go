@@ -27,16 +27,20 @@ func BuildDrinkList(bodyBytes []byte) string {
 		drinkchoices = append(drinkchoices, drinkList.Drinks[i].StrDrink)
 	}
 
-	searchTypeprompt := promptui.Select{
-		Label: "Select Drink",
-		Items: drinkchoices,
+	if len(drinkchoices) >= 1 {
+		searchTypeprompt := promptui.Select{
+			Label: "Select Drink",
+			Items: drinkchoices,
+		}
+
+		_, result, err := searchTypeprompt.Run()
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		return result
 	}
 
-	_, result, err := searchTypeprompt.Run()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return result
+	return ""
 }
