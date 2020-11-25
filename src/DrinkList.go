@@ -9,9 +9,7 @@ import (
 
 type DrinkList struct {
 	Drinks []struct {
-		StrDrink      string `json:"strDrink"`
-		StrDrinkThumb string `json:"strDrinkThumb"`
-		IDDrink       string `json:"idDrink"`
+		Name      string `json:"strDrink"`
 	} `json:"drinks"`
 }
 
@@ -25,7 +23,7 @@ func BuildDrinkList(bodyBytes []byte) string {
 	var drinkchoices []string
 
 	for i := 0; i < n; i++ {
-		drinkchoices = append(drinkchoices, drinkList.Drinks[i].StrDrink)
+		drinkchoices = append(drinkchoices, drinkList.Drinks[i].Name)
 	}
 
 	if len(drinkchoices) >= 1 {
