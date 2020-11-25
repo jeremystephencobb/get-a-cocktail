@@ -1,23 +1,11 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/manifoldco/promptui"
-	"io/ioutil"
-	"net/http"
-	"reflect"
 	"strings"
-)
 
-type DrinkList struct {
-	Drinks []struct {
-		StrDrink      string `json:"strDrink"`
-		StrDrinkThumb string `json:"strDrinkThumb"`
-		IDDrink       string `json:"idDrink"`
-	} `json:"drinks"`
-}
+	"github.com/manifoldco/promptui"
+)
 
 // Generated with: https://mholt.github.io/json-to-go/
 type Drinks struct {
@@ -98,65 +86,38 @@ Main:
 		case searchValueResult == "quit":
 			break Main
 		case searchValueResult == "random":
-			handleCocktailSearch(searchValueResult, "")
+			HandleCocktailSearch(searchValueResult, "")
 		case searchValueResult == "name":
-			valResult, valErr := handleTextSearch(searchValueResult)
-
-			if valErr != nil {
-				fmt.Printf("Something went wrong, please try again")
-			}
-			bodyBytes := handleCocktailSearch(searchValueResult, valResult)
-			buildDrinkInstructions(bodyBytes)
-
+			searchByName(searchValueResult)
 		case searchValueResult == "ingredient name":
-			valResult, valErr := handleTextSearch(searchValueResult)
-
-			if valErr != nil {
-				fmt.Printf("Something went wrong, please try again")
-			}
-			bodyBytes := handleCocktailSearch(searchValueResult, valResult)
-			drinkName := buildDrinkList(bodyBytes)
-
-			b := handleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
-			buildDrinkInstructions(b)
+			searchByIngredient(searchValueResult)
 		default:
 			fmt.Println("search by ", searchValueResult)
 		}
 	}
 }
 
-func handleTextSearch(searchValueResult string) (string, error) {
-	searchValueprompt := promptui.Prompt{
-		Label: "Search:",
-	}
+func searchByName(searchValueResult string) {
+	valResult, valErr := HandleTextSearch(searchValueResult)
 
-	fmt.Printf("Search by: %q\n", searchValueResult)
-	result, err := searchValueprompt.Run()
-
-	if err != nil {
-		return "", errors.New("Something went wrong, please try again")
+	if valErr != nil {
+		fmt.Printf("Something went wrong, please try again")
 	}
-	return result, nil
+	bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
+	BuildDrinkInstructions(bodyBytes)
 }
 
-func handleCocktailSearch(searchType, query string) []byte {
-	baseURL := handleSearchType(searchType)
+func searchByIngredient(searchValueResult string) {
+	valResult, valErr := HandleTextSearch(searchValueResult)
 
-	resp, err := http.Get(baseURL + query)
+			if valErr != nil {
+				fmt.Printf("Something went wrong, please try again")
+			}
+			bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
+			drinkName := BuildDrinkList(bodyBytes)
 
-	if err != nil {
-		panic(err)
-	}
-
-	defer resp.Body.Close()
-
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-
-	return bodyBytes
-}
-
-func handleIngredientSearch(selection string) {
-
+			b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
+			BuildDrinkInstructions(b)
 }
 
 func handleSearchType(selection string) string {
@@ -166,7 +127,7 @@ func handleSearchType(selection string) string {
 		response = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
 	case selection == "random": // ✔
 		response = "https://www.thecocktaildb.com/api/json/v1/1/random.php"
-	case selection == "ingredient name":
+	case selection == "ingredient name": // ✔
 		response = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?i="
 	case selection == "glass type":
 		response = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?g="
@@ -175,53 +136,6 @@ func handleSearchType(selection string) string {
 		response = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
 	}
 	return response
-}
-
-func buildDrinkList(bodyBytes []byte) string {
-	var drinkList DrinkList
-	json.Unmarshal(bodyBytes, &drinkList)
-
-	n := len(drinkList.Drinks)
-
-	// display the list of drinks
-	var drinkchoices []string
-
-	for i := 0; i < n; i++ {
-		drinkchoices = append(drinkchoices, drinkList.Drinks[i].StrDrink)
-	}
-
-	searchTypeprompt := promptui.Select{
-		Label: "Select Drink",
-		Items: drinkchoices,
-	}
-
-	_, result, err := searchTypeprompt.Run()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return result
-}
-
-func buildDrinkInstructions(bodyBytes []byte) {
-	var drinkList Drinks
-	json.Unmarshal(bodyBytes, &drinkList)
-
-	fields := reflect.TypeOf(drinkList.Drinks[0])
-	values := reflect.ValueOf(drinkList.Drinks[0])
-
-	num := fields.NumField()
-
-	for i := 0; i < num; i++ {
-		field := fields.Field(i)
-		value := values.Field(i)
-		if value.String() != "" {
-			fmt.Println(string(BPurple), field.Name, ":")
-			fmt.Println(string(BCyan), value)
-			fmt.Println(string(BWhite), "")
-		}
-	}
 }
 
 var BBlack string = "\033[1;30m"
