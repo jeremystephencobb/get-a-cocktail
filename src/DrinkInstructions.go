@@ -26,8 +26,6 @@ func BuildDrinkInstructions(bodyBytes []byte) {
 	}
 }
 
-
-
 // arr1 := []string{
 // 	"one", "two", "three", "four", "six",
 // }

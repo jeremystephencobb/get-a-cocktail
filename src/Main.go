@@ -110,14 +110,14 @@ func searchByName(searchValueResult string) {
 func searchByIngredient(searchValueResult string) {
 	valResult, valErr := HandleTextSearch(searchValueResult)
 
-			if valErr != nil {
-				fmt.Printf("Something went wrong, please try again")
-			}
-			bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
-			drinkName := BuildDrinkList(bodyBytes)
+	if valErr != nil {
+		fmt.Printf("Something went wrong, please try again")
+	}
+	bodyBytes := HandleCocktailSearch(searchValueResult, valResult)
+	drinkName := BuildDrinkList(bodyBytes)
 
-			b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
-			BuildDrinkInstructions(b)
+	b := HandleCocktailSearch("name", strings.ReplaceAll(drinkName, " ", "_"))
+	BuildDrinkInstructions(b)
 }
 
 func handleSearchType(selection string) string {
