@@ -9,7 +9,7 @@ import (
 
 type DrinkList struct {
 	Drinks []struct {
-		Name      string `json:"strDrink"`
+		Name string `json:"strDrink"`
 	} `json:"drinks"`
 }
 

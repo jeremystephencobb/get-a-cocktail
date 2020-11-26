@@ -19,9 +19,11 @@ func BuildDrinkInstructions(bodyBytes []byte) {
 		field := fields.Field(i)
 		value := values.Field(i)
 		if value.String() != "" {
-			fmt.Println(string(BPurple), field.Name, ":")
-			fmt.Println(string(BCyan), value)
-			fmt.Println(string(BWhite), "")
+			t := fmt.Sprintf("%v: %v\n", field.Name, value)
+			fmt.Println(t)
+			// fmt.Println(string(BPurple), field.Name, ":")
+			// fmt.Println(string(BCyan), value)
+			// fmt.Println(string(BWhite), "")
 		}
 	}
 }
