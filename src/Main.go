@@ -108,19 +108,23 @@ func comboSearch() {
 		}
 	}
 
-	// create a prompt with the cocktail names
-	searchTypeprompt := promptui.Select{
-		Label: "Select Drink",
-		Items: comboCocktails,
+	if len(comboCocktails) >= 1 {
+		// create a prompt with the cocktail names
+		searchTypeprompt := promptui.Select{
+			Label: "Select Drink",
+			Items: comboCocktails,
+		}
+	
+		_, result, err := searchTypeprompt.Run()
+	
+		if err != nil {
+			panic(err)
+		}
+		b := HandleCocktailSearch("name", strings.ReplaceAll(result, " ", "_"))
+		BuildDrinkInstructions(b)
+	} else {
+		fmt.Println("No drinks for that combo")
 	}
-
-	_, result, err := searchTypeprompt.Run()
-
-	if err != nil {
-		panic(err)
-	}
-	b := HandleCocktailSearch("name", strings.ReplaceAll(result, " ", "_"))
-	BuildDrinkInstructions(b)
 }
 
 func comboGlass() []string {
