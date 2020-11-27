@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"strings"
 )
 
 type DrinkList struct {
 	Drinks []struct {
-		StrDrink      string `json:"strDrink"`
-		StrDrinkThumb string `json:"strDrinkThumb"`
-		IDDrink       string `json:"idDrink"`
+		Name string `json:"strDrink"`
 	} `json:"drinks"`
 }
 
@@ -24,19 +23,23 @@ func BuildDrinkList(bodyBytes []byte) string {
 	var drinkchoices []string
 
 	for i := 0; i < n; i++ {
-		drinkchoices = append(drinkchoices, drinkList.Drinks[i].StrDrink)
+		drinkchoices = append(drinkchoices, drinkList.Drinks[i].Name)
 	}
 
-	searchTypeprompt := promptui.Select{
-		Label: "Select Drink",
-		Items: drinkchoices,
+	if len(drinkchoices) >= 1 {
+		searchTypeprompt := promptui.Select{
+			Label: "Select Drink",
+			Items: drinkchoices,
+		}
+
+		_, result, err := searchTypeprompt.Run()
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		return strings.ReplaceAll(result, " ", "_")
 	}
 
-	_, result, err := searchTypeprompt.Run()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return result
+	return ""
 }

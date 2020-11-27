@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"os"
+
+	"github.com/jedib0t/go-pretty/table"
 )
 
 func BuildDrinkInstructions(bodyBytes []byte) {
@@ -14,31 +17,25 @@ func BuildDrinkInstructions(bodyBytes []byte) {
 	values := reflect.ValueOf(drinkList.Drinks[0])
 
 	num := fields.NumField()
-
+	ingredientsTable := table.NewWriter()
+	
+	ingredientsTable.SetOutputMirror(os.Stdout)
+	
+	ingredientsTable.AppendHeader(table.Row{"Ingredient", "Amount"})
 	for i := 0; i < num; i++ {
 		field := fields.Field(i)
 		value := values.Field(i)
 		if value.String() != "" {
-			fmt.Println(string(BPurple), field.Name, ":")
-			fmt.Println(string(BCyan), value)
-			fmt.Println(string(BWhite), "")
+			if field.Name != "Instructions" {
+				ingredientsTable.AppendRow([]interface{}{field.Name, value})
+			} 
 		}
 	}
+	
+	ingredientsTable.Render()
+	fmt.Println("\n")
+	fmt.Println(string(BCyan))
+	fmt.Printf("Instructions: %s", values.Field(num -1))
+	fmt.Println(string(BWhite))
+	
 }
-
-// arr1 := []string{
-// 	"one", "two", "three", "four", "six",
-// }
-
-// arr2 := []string{
-// 	"one", "two", "four",
-// }
-
-// var commonelements []string
-// for i := 0; i < len(arr1); i++ {
-// 	for j := 0; j < len(arr2); j++ {
-// 		if arr1[i] == arr2[j] {
-// 			commonelements = append(commonelements, arr1[i])
-// 		}
-// 	}
-// }
